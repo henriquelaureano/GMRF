@@ -24,7 +24,7 @@ L <- t(esky) ; tL <- esky
 
 round( L %*% tL, 15 ) == round( A, 15 )
 
-## 2: Solve \mathbf{Lv} = \mathbf{b} ========== (Forward substitution) ##
+## 2: Solve \mathbf{Lv} = \mathbf{b} ========== (forward substitution) ##
 diag(L) == diag(tL)
 diag(L) != 0
 
@@ -36,7 +36,7 @@ for (i in 2:5)
   v[i] <- ( 1 / L[i, i] ) * ( b[i] - sum( L[i, 1:(i-1)] * v[1:(i-1)] ) )
 v
 
-## 3: Solve \mathbf{L}^{T}\mathbf{x} = \mathbf{v}  (Back substitution) ##
+## 3: Solve \mathbf{L}^{T}\mathbf{x} = \mathbf{v}  (back substitution) ##
 ( x <- numeric(5) )
 
 x[5] <- v[5] / L[5, 5]
