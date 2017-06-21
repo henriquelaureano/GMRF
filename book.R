@@ -11,7 +11,11 @@
 ##  Solving \mathbf{Ax} = \mathbf{b} where \mathbf{A} > 0 ============ ##
 
 da <- mvtnorm::rmvnorm(n = 10, mean = rep(0, 5), sigma = diag(5))
-( A <- cov(da) )
+( A <- cov(da) ) # A is SPB
+## or:
+# df <- data.frame( a = gl(3, 4), b = gl(4, 1, 12) )
+# mat <- model.matrix( ~ a + b, df )
+# A <- t(mat) %*% mat # A is SPB
 
 ( b <- as.matrix( rnorm(5) ) )
 
@@ -48,4 +52,8 @@ x
 
 cbind( A %*% x, b )
 round( A %*% x, 14 ) == round( b, 14 )
+
+### ==================================
+
+
 ### ================================================================= ###
