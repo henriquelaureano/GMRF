@@ -32,21 +32,23 @@ round( L %*% tL, 15 ) == round( A, 15 )
 diag(L) == diag(tL)
 diag(L) != 0
 
-( v <- numeric(5) )
+( v <- numeric( length(b) ) )
 
 v[1] <- b[1] / L[1, 1]
 
-for (i in 2:5)
+for (i in 2:length(b))
   v[i] <- ( 1 / L[i, i] ) * ( b[i] - sum( L[i, 1:(i-1)] * v[1:(i-1)] ) )
 v
 
 ## 3: Solve \mathbf{L}^{T}\mathbf{x} = \mathbf{v}  (back substitution) ##
-( x <- numeric(5) )
+( x <- numeric( length(v) ) )
 
 x[5] <- v[5] / L[5, 5]
 
-for (i in 4:1)
-  x[i] <- ( 1 / L[i, i] ) * ( v[i] - sum( L[(i+1):5, i] * x[(i+1):5] ) )
+for (i in (length(v)-1):1)
+  x[i] <-
+  ( 1 / L[i, i] ) *
+  ( v[i] - sum( L[(i+1):length(v), i] * x[(i+1):length(v)] ) )
 ## 4: Return \mathbf{x} ============================================== ##
 x
 
@@ -55,19 +57,45 @@ round( A %*% x, 14 ) == round( b, 14 )
 
 # Algorithm 2.2 =========================================================
 ##  Solving \mathbf{AX} = \mathbf{B} where \mathbf{A} > 0 ============ ##
+A
+
+( B <- mvtnorm::rmvnorm(n = 5, mean = rep(0, 7), sigma = diag(7)) )
 
 ## 1: Compute the Cholesky factorization, \mathbf{A} = \mathbf{LL}^{T} ##
+L
+tL
+
+round( L %*% tL, 15 ) == round( A, 15 )
 
 ## 2: for j = 1 to k do ============================================== ##
+ncol(B) # k
 
 ## 3: - Solve \mathbf{L}\mathbf{v} = \mathbf{B}_{j} ================== ##
 ##      (forward substitution) ======================================= ##
-
 ## 4: - Solve \mathbf{L}^{T}\mathbf{X}_{j} = \mathbf{v} ============== ##
 ##      (back substitution) ========================================== ##
+( X <- matrix(0, nrow = nrow(B), ncol = ncol(B)) )
 
+for (j in 1:ncol(B)) {
+  
+  v <- numeric( nrow(B) )
+  v[1] <- B[1, j] / L[1, 1]
+  
+  for (i in 2:5)
+    v[i] <-
+    ( 1 / L[i, i] ) * ( B[i, j] - sum( L[i, 1:(i-1)] * v[1:(i-1)] ) )
+  
+  X[5, j] <- v[5] / L[5, 5]
+  for (i in (nrow(B)-1):1)
+    X[i, j] <-
+    ( 1 / L[i, i] ) *
+    ( v[i] - sum( L[(i+1):nrow(B), i] * X[(i+1):nrow(B), j] ) )
+}
 ## 5: end for ======================================================== ##
-
 ## 6: Return \mathbf{X} ============================================== ##
+X
 
+A %*% X
+B
+round( A %*% X, 13 ) == round( B, 13 )
 ### ================================================================= ###
