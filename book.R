@@ -6,6 +6,7 @@
 
 ### Chapter 2: Theory of Gaussian Markov random fields ==================
 ## 2.3 Simulation from a GRMF ===========================================
+## 2.3.1 Some basic numerical linear algebra ============================
 
 # Algorithm 2.1 =========================================================
 ##  Solving \mathbf{Ax} = \mathbf{b} where \mathbf{A} > 0 ============ ##
