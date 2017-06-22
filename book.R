@@ -99,4 +99,26 @@ X
 A %*% X
 B
 round( A %*% X, 13 ) == round( B, 13 )
+
+## 2.3.2 Unconditional simulation of a GMRF =============================
+
+## Algorithm 2.3 ========================================================
+## Sampling \mathbf{x} \sim N(\bm{\mu}, \bm{\Sigma}) ================= ##
+( nu <- rnorm(6) )
+( sig <- cov( mvtnorm::rmvnorm(n = length(nu)
+                               , mean = rep(0, length(nu))
+                               , sigma = diag(length(nu)))
+) ) # sig is SPB
+
+## 1: Compute the Cholesky factorization, ============================ ##
+##    \bm{\Sigma} = \tilde{\mathbf{L}}\tilde{\mathbf{L}}^{T} ========= ##
+
+## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+
+## 3: Compute \mathbf{v} = \tilde{\mathbf{L}}\mathbf{z} ============== ##
+
+## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+
+## 5: Return \mathbf{x} ============================================== ##
+
 ### ================================================================= ###
