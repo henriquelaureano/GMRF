@@ -104,21 +104,33 @@ round( A %*% X, 13 ) == round( B, 13 )
 
 ## Algorithm 2.3 ========================================================
 ## Sampling \mathbf{x} \sim N(\bm{\mu}, \bm{\Sigma}) ================= ##
-( nu <- rnorm(6) )
-( sig <- cov( mvtnorm::rmvnorm(n = length(nu)
-                               , mean = rep(0, length(nu))
-                               , sigma = diag(length(nu)))
-) ) # sig is SPB
+( mu <- as.matrix(rnorm(5), nrow = 5) )
+( sig <- cov( mvtnorm::rmvnorm(n = 10
+                               , mean = rep(0, nrow(mu))
+                               , sigma = diag(nrow(mu))) ) ) # sig is SPB
 
 ## 1: Compute the Cholesky factorization, ============================ ##
 ##    \bm{\Sigma} = \tilde{\mathbf{L}}\tilde{\mathbf{L}}^{T} ========= ##
+( esky <- chol(sig) ) # this matrix is upper triangular,
+                      # but L have to be lower, so, esky = L^{T}
+t(esky) # this matrix is lower triangular,
+        # but L^{T} have to be upper, so esky^{T} = L
+L <- t(esky) ; tL <- esky
+
+round( L %*% tL, 14 ) == round( sig, 14 )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+( z <- mvtnorm::rmvnorm(n = nrow(mu)
+                        , mean = rep(0, 1)
+                        , sigma = diag(1)) )
 
-## 3: Compute \mathbf{v} = \tilde{\mathbf{L}}\mathbf{z} ============== ##
+## 3: Compute \bm{\upsilon} = \tilde{\mathbf{L}}\mathbf{z} =========== ##
+( upsi <- L %*% z )
 
 ## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+x <- mu + upsi
 
 ## 5: Return \mathbf{x} ============================================== ##
+x
 
 ### ================================================================= ###
