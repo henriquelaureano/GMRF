@@ -27,29 +27,31 @@ t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 L <- t(esky) ; tL <- esky
 
-round( L %*% tL, 15 ) == round( A, 15 )
+round( L %*% tL, 14 ) == round( A, 14 )
 
-## 2: Solve \mathbf{Lv} = \mathbf{b} ========== (forward substitution) ##
+## 2: Solve \mathbf{L}\bm{\upsilon} = \mathbf{b} (forward substitution) ##
 diag(L) == diag(tL)
 diag(L) != 0
 
-( v <- numeric( length(b) ) )
+( upsi <- numeric( nrow(b) ) )
 
-v[1] <- b[1] / L[1, 1]
+upsi[1] <- b[1] / L[1, 1]
+
 
 for (i in 2:length(b))
-  v[i] <- ( 1 / L[i, i] ) * ( b[i] - sum( L[i, 1:(i-1)] * v[1:(i-1)] ) )
-v
+  upsi[i] <- ( 1 / L[i, i] ) *
+  ( b[i] - sum( L[i, 1:(i-1)] * upsi[1:(i-1)] ) ) ; upsi
 
-## 3: Solve \mathbf{L}^{T}\mathbf{x} = \mathbf{v}  (back substitution) ##
-( x <- numeric( length(v) ) )
+## 3: Solve \mathbf{L}^{T}\mathbf{x} = \bm{\upsilon} ================== ##
+##    Back substitution =============================================== ##
+( x <- numeric( length(upsi) ) )
 
-x[5] <- v[5] / L[5, 5]
+x[5] <- upsi[5] / L[5, 5]
 
-for (i in (length(v)-1):1)
+for (i in (length(upsi)-1):1)
   x[i] <-
   ( 1 / L[i, i] ) *
-  ( v[i] - sum( L[(i+1):length(v), i] * x[(i+1):length(v)] ) )
+  ( upsi[i] - sum( L[(i+1):length(upsi), i] * x[(i+1):length(upsi)] ) )
 ## 4: Return \mathbf{x} ============================================== ##
 x
 
@@ -66,31 +68,31 @@ A
 L
 tL
 
-round( L %*% tL, 15 ) == round( A, 15 )
+round( L %*% tL, 14 ) == round( A, 14 )
 
 ## 2: for j = 1 to k do ============================================== ##
 ncol(B) # k
 
-## 3: - Solve \mathbf{L}\mathbf{v} = \mathbf{B}_{j} ================== ##
+## 3: - Solve \mathbf{L}\bm{\upsilon} = \mathbf{B}_{j} =============== ##
 ##      (forward substitution) ======================================= ##
-## 4: - Solve \mathbf{L}^{T}\mathbf{X}_{j} = \mathbf{v} ============== ##
-##      (back substitution) ========================================== ##
+## 4: - Solve \mathbf{L}^{T}\mathbf{X}_{j} = \bm{\upsilon} =========== ##
+##      Back substitution ============================================ ##
 ( X <- matrix(0, nrow = nrow(B), ncol = ncol(B)) )
 
 for (j in 1:ncol(B)) {
   
-  v <- numeric( nrow(B) )
-  v[1] <- B[1, j] / L[1, 1]
+  upsi <- numeric( nrow(B) )
+  upsi[1] <- B[1, j] / L[1, 1]
   
   for (i in 2:5)
-    v[i] <-
-    ( 1 / L[i, i] ) * ( B[i, j] - sum( L[i, 1:(i-1)] * v[1:(i-1)] ) )
+    upsi[i] <-
+    ( 1 / L[i, i] ) * ( B[i, j] - sum( L[i, 1:(i-1)] * upsi[1:(i-1)] ) )
   
-  X[5, j] <- v[5] / L[5, 5]
+  X[5, j] <- upsi[5] / L[5, 5]
   for (i in (nrow(B)-1):1)
     X[i, j] <-
     ( 1 / L[i, i] ) *
-    ( v[i] - sum( L[(i+1):nrow(B), i] * X[(i+1):nrow(B), j] ) )
+    ( upsi[i] - sum( L[(i+1):nrow(B), i] * X[(i+1):nrow(B), j] ) )
 }
 ## 5: end for ======================================================== ##
 ## 6: Return \mathbf{X} ============================================== ##
@@ -134,7 +136,7 @@ x <- mu + upsi
 ## 5: Return \mathbf{x} ============================================== ##
 x
 
-## Algorithm 2.4 ===================================================== ## 
+## Algorithm 2.4 ======================================================== 
 ## Sampling \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) ============= ##
 mu
 ( q <- solve(sig) )
@@ -150,11 +152,25 @@ L <- t(esky) ; tL <- esky
 round( L %*% tL, 14 ) == round( q, 14 )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+( z <- mvtnorm::rmvnorm(n = nrow(mu)
+                        , mean = rep(0, 1)
+                        , sigma = diag(1)) )
 
 ## 3: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+##    Back substitution ============================================== ##
+( upsi <- numeric( nrow(mu) ) )
+
+upsi[5] <- z[5] / L[5, 5]
+
+for (i in (nrow(z)-1):1)
+  upsi[i] <-
+  ( 1 / L[i, i] ) *
+  ( z[i] - sum( L[(i+1):nrow(z), i] * upsi[(i+1):nrow(z)] ) ) ; upsi
 
 ## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+x <- mu + upsi
 
 ## 5: Return \mathbf{x} ============================================== ##
+x
 
 ### ================================================================= ###
