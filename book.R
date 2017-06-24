@@ -112,9 +112,10 @@ round( A %*% X, 13 ) == round( B, 13 )
 ## 1: Compute the Cholesky factorization, ============================ ##
 ##    \bm{\Sigma} = \tilde{\mathbf{L}}\tilde{\mathbf{L}}^{T} ========= ##
 ( esky <- chol(sig) ) # this matrix is upper triangular,
-                      # but L have to be lower, so, esky = L^{T}
+                      # but \tilde{L} have to be lower, so,
+                      # esky = \tilde{L}^{T}
 t(esky) # this matrix is lower triangular,
-        # but L^{T} have to be upper, so esky^{T} = L
+        # but \tilde{L}^{T} have to be upper, so esky^{T} = \tilde{L}
 L <- t(esky) ; tL <- esky
 
 round( L %*% tL, 14 ) == round( sig, 14 )
@@ -135,9 +136,18 @@ x
 
 ## Algorithm 2.4 ===================================================== ## 
 ## Sampling \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) ============= ##
+mu
+( q <- solve(sig) )
 
 ## 1: Compute the Cholesky factorization, ============================ ##
 ##    \mathbf{Q} = \mathbf{L}\mathbf{L}^{T} ========================== ##
+( esky <- chol(q) ) # this matrix is upper triangular,
+                    # but L have to be lower, so, esky = L^{T}
+t(esky) # this matrix is lower triangular,
+        # but L^{T} have to be upper, so esky^{T} = L
+L <- t(esky) ; tL <- esky
+
+round( L %*% tL, 14 ) == round( q, 14 )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 
