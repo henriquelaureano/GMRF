@@ -215,15 +215,17 @@ for (i in (length(om)-1):1)
 ## 5: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
 ( upsi <- numeric( nrow(z) ) )
 
-mu[5] <- om[5] / L[5, 5]
+upsi[5] <- z[5] / L[5, 5]
 
-for (i in (length(om)-1):1)
-  mu[i] <-
+for (i in (length(upsi)-1):1)
+  upsi[i] <-
   ( 1 / L[i, i] ) *
-  ( om[i] - sum( L[(i+1):length(om), i] * mu[(i+1):length(om)] ) ) ; mu
+  ( z[i] - sum( L[(i+1):nrow(z), i] * upsi[(i+1):nrow(z)] ) ) ; upsi
 
 ## 6: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+x <- mu + upsi
 
 ## 7: Return \mathbf{x} ============================================== ##
+x
 
 ### ================================================================= ###
