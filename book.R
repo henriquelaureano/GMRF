@@ -173,4 +173,21 @@ x <- mu + upsi
 ## 5: Return \mathbf{x} ============================================== ##
 x
 
+## Algorithm 2.5 ========================================================
+## Sampling \mathbf{x} \sim N_{C}(\mathbf{b}, \mathbf{Q}) ============ ## 
+
+## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
+
+## 2: Solve \mathbf{L}\bm{\omega} = \mathbf{b} ======================= ##
+
+## 3: Solve \mathbf{L}^{T}\bm{\mu} = \bm{\omega} ===================== ##
+
+## 4: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+
+## 5: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+
+## 6: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+
+## 7: Return \mathbf{x} ============================================== ##
+
 ### ================================================================= ###
