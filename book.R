@@ -175,8 +175,14 @@ x
 
 ## Algorithm 2.5 ========================================================
 ## Sampling \mathbf{x} \sim N_{C}(\mathbf{b}, \mathbf{Q}) ============ ## 
+b
+q
 
 ## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
+L # t(chol(q))
+tL
+
+round( L %*% tL, 13 ) == round( q, 13 )
 
 ## 2: Solve \mathbf{L}\bm{\omega} = \mathbf{b} ======================= ##
 
