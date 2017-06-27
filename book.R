@@ -234,4 +234,26 @@ x
 ## Sampling \mathbf{x}|\mathbf{Ax} = \mathbf{e} ====================== ##
 ## where \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) ================ ##
 
+## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
+
+## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+
+## 3: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+
+## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+
+## 5: Compute \mathbf{V}_{n \times k} = \mathbf{Q}^{-1}\mathbf{A}^{T}  ##
+##    using Algorithm 2.2 using \mathbf{L} from step 1 =============== ##
+
+## 6: Compute \mathbf{W}_{k \times k} = \mathbf{AV} ================== ##
+
+## 7: Compute \mathbf{U}_{k \times n} = \mathbf{W}^{-1}\mathbf{V}^{T}  ##
+##    using Algorithm 2.2 ============================================ ##
+
+## 8: Compute \mathbf{c} = \mathbf{Ax} - \mathbf{e} ================== ##
+
+## 9: Compute \mathbf{x}^{*} = \mathbf{x} - \mathbf{U}^{T}\mathbf{c} = ##
+
+## 10: Return \mathbf{x}^{*} ========================================= ##
+
 ### ================================================================= ###
