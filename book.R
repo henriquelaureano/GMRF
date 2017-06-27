@@ -37,7 +37,6 @@ diag(L) != 0
 
 upsi[1] <- b[1] / L[1, 1]
 
-
 for (i in 2:length(b))
   upsi[i] <- ( 1 / L[i, i] ) *
   ( b[i] - sum( L[i, 1:(i-1)] * upsi[1:(i-1)] ) ) ; upsi
@@ -185,12 +184,43 @@ tL
 round( L %*% tL, 13 ) == round( q, 13 )
 
 ## 2: Solve \mathbf{L}\bm{\omega} = \mathbf{b} ======================= ##
+##    Forward substitution =========================================== ##
+# diag(L) == diag(tL)
+# diag(L) != 0
+
+( om <- numeric( nrow(b) ) )
+
+om[1] <- b[1] / L[1, 1]
+
+for (i in 2:length(b))
+  om[i] <- ( 1 / L[i, i] ) *
+  ( b[i] - sum( L[i, 1:(i-1)] * om[1:(i-1)] ) ) ; om
 
 ## 3: Solve \mathbf{L}^{T}\bm{\mu} = \bm{\omega} ===================== ##
+##    Back substitution ============================================== ##
+( mu <- numeric( length(om) ) )
+
+mu[5] <- om[5] / L[5, 5]
+
+for (i in (length(om)-1):1)
+  mu[i] <-
+  ( 1 / L[i, i] ) *
+  ( om[i] - sum( L[(i+1):length(om), i] * mu[(i+1):length(om)] ) ) ; mu
 
 ## 4: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+( z <- mvtnorm::rmvnorm(n = length(mu)
+                        , mean = rep(0, 1)
+                        , sigma = diag(1)) )
 
 ## 5: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+( upsi <- numeric( nrow(z) ) )
+
+mu[5] <- om[5] / L[5, 5]
+
+for (i in (length(om)-1):1)
+  mu[i] <-
+  ( 1 / L[i, i] ) *
+  ( om[i] - sum( L[(i+1):length(om), i] * mu[(i+1):length(om)] ) ) ; mu
 
 ## 6: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
 
