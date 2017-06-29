@@ -289,6 +289,7 @@ for (i in (nrow(z)-1):1)
 } ; V
 
 ## 6: Compute \mathbf{W}_{k \times k} = \mathbf{AV} ================== ##
+( W <- A %*% V )
 
 ## 7: Compute \mathbf{U}_{k \times n} = \mathbf{W}^{-1}\mathbf{V}^{T}  ##
 ##    using Algorithm 2.2 ============================================ ##
