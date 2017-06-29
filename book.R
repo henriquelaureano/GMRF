@@ -83,7 +83,7 @@ for (j in 1:ncol(B)) {
   upsi <- numeric( nrow(B) )
   upsi[1] <- B[1, j] / L[1, 1]
   
-  for (i in 2:5)
+  for (i in 2:nrow(B))
     upsi[i] <-
     ( 1 / L[i, i] ) * ( B[i, j] - sum( L[i, 1:(i-1)] * upsi[1:(i-1)] ) )
   
@@ -138,17 +138,17 @@ x
 ## Algorithm 2.4 ======================================================== 
 ## Sampling \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) ============= ##
 mu
-( q <- solve(sig) )
+( Q <- solve(sig) )
 
 ## 1: Compute the Cholesky factorization, ============================ ##
 ##    \mathbf{Q} = \mathbf{L}\mathbf{L}^{T} ========================== ##
-( esky <- chol(q) ) # this matrix is upper triangular,
+( esky <- chol(Q) ) # this matrix is upper triangular,
                     # but L have to be lower, so, esky = L^{T}
 t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 L <- t(esky) ; tL <- esky
 
-round( L %*% tL, 14 ) == round( q, 14 )
+round( L %*% tL, 14 ) == round( Q, 14 )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 ( z <- mvtnorm::rmvnorm(n = nrow(mu)
@@ -175,13 +175,13 @@ x
 ## Algorithm 2.5 ========================================================
 ## Sampling \mathbf{x} \sim N_{C}(\mathbf{b}, \mathbf{Q}) ============ ## 
 b
-q
+Q
 
 ## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
 L # t(chol(q))
 tL
 
-round( L %*% tL, 13 ) == round( q, 13 )
+round( L %*% tL, 13 ) == round( Q, 13 )
 
 ## 2: Solve \mathbf{L}\bm{\omega} = \mathbf{b} ======================= ##
 ##    Forward substitution =========================================== ##
@@ -233,17 +233,60 @@ x
 ## Algorithm 2.6 ========================================================
 ## Sampling \mathbf{x}|\mathbf{Ax} = \mathbf{e} ====================== ##
 ## where \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) ================ ##
+mu
+Q
+( A <- mvtnorm::rmvnorm(n = 4, mean = rep(0, 5), sigma = diag(5)) )
+( e <- rnorm( nrow(A) ) )
 
 ## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
+L # t(chol(q))
+tL
+
+round( L %*% tL, 14 ) == round( Q, 14 )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+( z <- mvtnorm::rmvnorm(n = length(mu)
+                        , mean = rep(0, 1)
+                        , sigma = diag(1)) )
 
 ## 3: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+##    Back substitution ============================================== ##
+( upsi <- numeric( nrow(z) ) )
+
+upsi[5] <- z[5] / L[5, 5]
+
+for (i in (nrow(z)-1):1)
+  upsi[i] <-
+  ( 1 / L[i, i] ) *
+  ( z[i] - sum( L[(i+1):nrow(z), i] * upsi[(i+1):nrow(z)] ) ) ; upsi
 
 ## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+( x <- mu + upsi)
 
 ## 5: Compute \mathbf{V}_{n \times k} = \mathbf{Q}^{-1}\mathbf{A}^{T}  ##
 ##    using Algorithm 2.2 using \mathbf{L} from step 1 =============== ##
+
+## ========= \mathbf{V} = \mathbf{Q}^{-1}\mathbf{A}^{T} \Rightarrow == ##
+## \mathbf{Q}\mathbf{V} = \mathbf{A}^{T} ============================= ##
+
+( V <- matrix( 0, nrow = nrow(Q), ncol = ncol(t(A)) ) )
+
+ for (j in 1:ncol(t(A))) {
+
+  upsi <- numeric( nrow(t(A)) )
+  upsi[1] <- t(A)[1, j] / L[1, 1]
+
+  for (i in 2:nrow(t(A)))
+    upsi[i] <-
+    ( 1 / L[i, i] ) *
+    ( t(A)[i, j] - sum( L[i, 1:(i-1)] * upsi[1:(i-1)] ) )
+
+  V[5, j] <- upsi[5] / L[5, 5]
+  for (i in (nrow(t(A))-1):1)
+    V[i, j] <-
+    ( 1 / L[i, i] ) *
+    ( upsi[i] - sum( L[(i+1):nrow(t(A)), i] * V[(i+1):nrow(t(A)), j] ) )
+} ; V
 
 ## 6: Compute \mathbf{W}_{k \times k} = \mathbf{AV} ================== ##
 
