@@ -325,6 +325,7 @@ for (j in 1:ncol(t(V))) {
 } ; U
 
 ## 8: Compute \mathbf{c} = \mathbf{Ax} - \mathbf{e} ================== ##
+( c <- A %*% x - e )
 
 ## 9: Compute \mathbf{x}^{*} = \mathbf{x} - \mathbf{U}^{T}\mathbf{c} = ##
 
