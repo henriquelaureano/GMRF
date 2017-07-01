@@ -341,8 +341,8 @@ Q
 ( A <- mvtnorm::rmvnorm(n = 4, mean = rep(0, 5), sigma = diag(5)) )
 ( sig_eps <- cov(
   mvtnorm::rmvnorm(n = 10
-                   , mean = rep(0, length(mu))
-                   , sigma = diag(length(mu)))
+                   , mean = rep(0, nrow(A))
+                   , sigma = diag(nrow(A)))
 ) ) # sig_eps is SPB
 
 ## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
@@ -396,12 +396,40 @@ for (j in 1:ncol(t(A))) {
 
 ## 6: Compute ======================================================== ##
 ##    \mathbf{W}_{k \times k} = \mathbf{AV} + \bm{\Sigma_{\epsilon}} = ##
+( W <- A %*% V + sig_eps )
 
 ## 7: Compute \mathbf{U}_{k \times n} = \mathbf{W}^{-1}\mathbf{V}^{T}  ##
 ##    using Algorithm 2.2 ============================================ ##
 
 ## ========= \mathbf{U} = \mathbf{W}^{-1}\mathbf{V}^{T} \Rightarrow == ##
 ## \mathbf{W}\mathbf{U} = \mathbf{V}^{T} ============================= ##
+
+( esky <- chol(W) ) # this matrix is upper triangular,
+                    # but L have to be lower, so, esky = L^{T}
+t(esky) # this matrix is lower triangular,
+        # but L^{T} have to be upper, so esky^{T} = L
+Lw <- t(esky) ; tLw <- esky
+
+round( Lw %*% tLw, 14 ) == round( W, 14 )
+
+( U <- matrix( 0, nrow = nrow(W), ncol = ncol(t(V)) ) )
+
+for (j in 1:ncol(t(V))) {
+  
+  upsi <- numeric( nrow(t(V)) )
+  upsi[1] <- t(V)[1, j] / Lw[1, 1]
+  
+  for (i in 2:nrow(t(V)))
+    upsi[i] <-
+    ( 1 / Lw[i, i] ) *
+    ( t(V)[i, j] - sum( Lw[i, 1:(i-1)] * upsi[1:(i-1)] ) )
+  
+  U[4, j] <- upsi[4] / Lw[4, 4]
+  for (i in (nrow(t(V))-1):1)
+    U[i, j] <-
+    ( 1 / Lw[i, i] ) *
+    ( upsi[i] - sum( Lw[(i+1):nrow(t(V)), i] * U[(i+1):nrow(t(V)), j] ) )
+} ; U
 
 ## 8: Sample \bm{\epsilon} \sim N(\mathbf{e}, \bm{\Sigma_{epsilon}}) = ##
 ##    using Algorithm 2.3 ============================================ ##
