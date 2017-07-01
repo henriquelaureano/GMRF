@@ -338,6 +338,7 @@ xs
 ## \mathbf{e}|\mathbf{x} \sim N(\mathbf{Ax}, \bm{\Sigma_{\epsilon}}) = ##
 mu
 Q
+e
 ( A <- mvtnorm::rmvnorm(n = 4, mean = rep(0, 5), sigma = diag(5)) )
 ( sig_eps <- cov(
   mvtnorm::rmvnorm(n = 10
@@ -434,10 +435,24 @@ for (j in 1:ncol(t(V))) {
 ## 8: Sample \bm{\epsilon} \sim N(\mathbf{e}, \bm{\Sigma_{epsilon}}) = ##
 ##    using Algorithm 2.3 ============================================ ##
 
+L_se <- t( chol(sig_eps) ) ; tL_se <- chol(sig_eps)
+
+round( L_se %*% tL_se, 15 ) == round( sig_eps, 15 )
+
+( z <- mvtnorm::rmvnorm(n = length(e)
+                        , mean = rep(0, 1)
+                        , sigma = diag(1)) )
+( upsi <- L_se %*% z )
+
+( eps <- e + upsi )
+
 ## 9: Compute \mathbf{c} = \mathbf{Ax} - \bm{\epsilon} =============== ##
+( c <- A %*% x - eps )
 
 ## 10: Compute \mathbf{x}^{*} = \mathbf{x} - \mathbf{U}^{T}\mathbf{c}  ##
+xs <- x - t(U) %*% c
 
 ## 11: Return \mathbf{x}^{*} ========================================= ##
+xs
 
 ### ================================================================= ###
