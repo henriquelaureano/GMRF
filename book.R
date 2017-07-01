@@ -333,8 +333,6 @@ xs <- x - t(U) %*% c
 ## 10: Return \mathbf{x}^{*} ========================================= ##
 xs
 
-## 2.3.3 Conditional simulation of a GMRF ===============================
-
 ## Algorithm 2.7 ========================================================
 ## Sampling \pi(\mathbf{x}|\mathbf{e}) where ========================= ##
 ## \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) and ================== ##
