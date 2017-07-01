@@ -336,6 +336,39 @@ xs
 ## Algorithm 2.7 ========================================================
 ## Sampling \pi(\mathbf{x}|\mathbf{e}) where ========================= ##
 ## \mathbf{x} \sim N(\bm{\mu}, \mathbf{Q}^{-1}) and ================== ##
-## \mathbf{e}|\mathbf{x} \sim N(\mathbf{Ax}, \bm{\Sigma}_{\epsilon}) = ##
+## \mathbf{e}|\mathbf{x} \sim N(\mathbf{Ax}, \bm{\Sigma_{\epsilon}}) = ##
+
+## 1: Compute the Cholesky factorization, \mathbf{Q} = \mathbf{LL}^{T} ##
+
+## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
+
+## 3: Solve \mathbf{L}^{T}\bm{\upsilon} = \mathbf{z} ================= ##
+##    Back substitution ============================================== ##
+
+## 4: Compute \mathbf{x} = \bm{\mu} + \bm{\upsilon} ================== ##
+
+## 5: Compute \mathbf{V}_{n \times k} = \mathbf{Q}^{-1}\mathbf{A}^{T}  ##
+##    using Algorithm 2.2 using \mathbf{L} from step 1 =============== ##
+
+## ========= \mathbf{V} = \mathbf{Q}^{-1}\mathbf{A}^{T} \Rightarrow == ##
+## \mathbf{Q}\mathbf{V} = \mathbf{A}^{T} ============================= ##
+
+## 6: Compute ======================================================== ##
+##    \mathbf{W}_{k \times k} = \mathbf{AV} + \bm{\Sigma_{\epsilon}} = ##
+
+## 7: Compute \mathbf{U}_{k \times n} = \mathbf{W}^{-1}\mathbf{V}^{T}  ##
+##    using Algorithm 2.2 ============================================ ##
+
+## ========= \mathbf{U} = \mathbf{W}^{-1}\mathbf{V}^{T} \Rightarrow == ##
+## \mathbf{W}\mathbf{U} = \mathbf{V}^{T} ============================= ##
+
+## 8: Sample \bm{\epsilon} \sim N(\mathbf{e}, \bm{\Sigma_{epsilon}}) = ##
+##    using Algorithm 2.3 ============================================ ##
+
+## 9: Compute \mathbf{c} = \mathbf{Ax} - \bm{\epsilon} =============== ##
+
+## 10: Compute \mathbf{x}^{*} = \mathbf{x} - \mathbf{U}^{T}\mathbf{c}  ##
+
+## 11: Return \mathbf{x}^{*} ========================================= ##
 
 ### ================================================================= ###
