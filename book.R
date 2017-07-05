@@ -464,21 +464,17 @@ Q
 
 ## 1: for j = 1 to n do ============================================== ##
 ## 2: - \upsilon_{j:n} = Q_{j:n, j} ================================== ##
+## 3: - for k = 1 to j - 1 do ======================================== ##
+##      \upsilon_{j:n} = \upsilon_{j:n} - L_{j:n, k} L_{j, k} ======== ##
+##      L_{j:n, k} L_{j, k} = \upsilon_{j:n} - \upsilon_{j:n} ======== ##
 
-upsi <- vector("list", nrow(Q)**2)
-
-l <- 1
+upsi <- vector("list", nrow(Q))
 
 for (j in 1:ncol(Q)) {
   
-  for (i in 1:nrow(Q)) {
-    
-    upsi[[l]] <- Q[i:nrow(Q), j]
-    
-    l <- l + 1 } }
-
-## 3: - for k = 1 to j - 1 do ======================================== ##
-##      \upsilon_{j:n} = \upsilon_{j:n} - L_{j:n, k} L_{j, k} ======== ##
+  upsi[[j]] <- Q[j:nrow(Q), j]
+  
+}
 
 ## 4: - L_{j:n, j} = \upsilon_{j:n} / \sqrt{\upsilon_{j}} ============ ##
 
