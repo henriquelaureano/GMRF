@@ -485,4 +485,8 @@ for (j in 2:n) {
 L
 
 all.equal( L, t(chol(Q)) )
+
+# Algorithm 2.9 =========================================================
+## Band-Cholesky factorization of \mathbf{Q} with bandwidth \mathbf{p} ##
+
 ### ================================================================= ###
