@@ -27,10 +27,10 @@ t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 L <- t(esky) ; tL <- esky
 
-round( L %*% tL, 14 ) == round( A, 14 )
+all.equal( L %*% tL, A )
 
 ## 2: Solve \mathbf{L}\bm{\upsilon} = \mathbf{b} (forward substitution) ##
-diag(L) == diag(tL)
+all.equal( diag(L), diag(tL) )
 diag(L) != 0
 
 ( upsi <- numeric( nrow(b) ) )
@@ -55,7 +55,7 @@ for (i in (length(upsi)-1):1)
 x
 
 cbind( A %*% x, b )
-round( A %*% x, 14 ) == round( b, 14 )
+all.equal(A %*% x, b)
 
 # Algorithm 2.2 =========================================================
 ##  Solving \mathbf{AX} = \mathbf{B} where \mathbf{A} > 0 ============ ##
@@ -67,7 +67,7 @@ A
 L
 tL
 
-round( L %*% tL, 14 ) == round( A, 14 )
+all.equal( L %*% tL, A )
 
 ## 2: for j = 1 to k do ============================================== ##
 ncol(B) # k
@@ -99,7 +99,7 @@ X
 
 A %*% X
 B
-round( A %*% X, 13 ) == round( B, 13 )
+all.equal( A %*% X, B )
 
 ## 2.3.2 Unconditional simulation of a GMRF =============================
 
@@ -119,7 +119,7 @@ t(esky) # this matrix is lower triangular,
         # but \tilde{L}^{T} have to be upper, so esky^{T} = \tilde{L}
 L <- t(esky) ; tL <- esky
 
-round( L %*% tL, 14 ) == round( sig, 14 )
+all.equal( L %*% tL, sig )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 ( z <- mvtnorm::rmvnorm(n = nrow(mu)
@@ -148,7 +148,7 @@ t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 L <- t(esky) ; tL <- esky
 
-round( L %*% tL, 14 ) == round( Q, 14 )
+all.equal( L %*% tL, Q )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 ( z <- mvtnorm::rmvnorm(n = nrow(mu)
@@ -181,11 +181,11 @@ Q
 L # t(chol(q))
 tL
 
-round( L %*% tL, 13 ) == round( Q, 13 )
+all.equal( L %*% tL, Q )
 
 ## 2: Solve \mathbf{L}\bm{\omega} = \mathbf{b} ======================= ##
 ##    Forward substitution =========================================== ##
-# diag(L) == diag(tL)
+# all.equal( diag(L), diag(tL) )
 # diag(L) != 0
 
 ( om <- numeric( nrow(b) ) )
@@ -242,7 +242,7 @@ Q
 L # t(chol(Q))
 tL
 
-round( L %*% tL, 14 ) == round( Q, 14 )
+all.equal( L %*% tL, Q )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 ( z <- mvtnorm::rmvnorm(n = length(mu)
@@ -302,7 +302,7 @@ t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 Lw <- t(esky) ; tLw <- esky
 
-round( Lw %*% tLw, 14 ) == round( W, 14 )
+all.equal( Lw %*% tLw, W )
 
 ( U <- matrix( 0, nrow = nrow(W), ncol = ncol(t(V)) ) )
 
@@ -350,7 +350,7 @@ e
 L # t(chol(Q))
 tL
 
-round( L %*% tL, 14 ) == round( Q, 14 )
+all.equal( L %*% tL, Q )
 
 ## 2: Sample \mathbf{z} \sim N(\mathbf{0}, \mathbf{I}) =============== ##
 ( z <- mvtnorm::rmvnorm(n = length(mu)
@@ -411,7 +411,7 @@ t(esky) # this matrix is lower triangular,
         # but L^{T} have to be upper, so esky^{T} = L
 Lw <- t(esky) ; tLw <- esky
 
-round( Lw %*% tLw, 14 ) == round( W, 14 )
+all.equal( Lw %*% tLw, W )
 
 ( U <- matrix( 0, nrow = nrow(W), ncol = ncol(t(V)) ) )
 
@@ -437,7 +437,7 @@ for (j in 1:ncol(t(V))) {
 
 L_se <- t( chol(sig_eps) ) ; tL_se <- chol(sig_eps)
 
-round( L_se %*% tL_se, 15 ) == round( sig_eps, 15 )
+all.equal( L_se %*% tL_se, sig_eps )
 
 ( z <- mvtnorm::rmvnorm(n = length(e)
                         , mean = rep(0, 1)
@@ -466,19 +466,23 @@ Q
 ## 2: - \upsilon_{j:n} = Q_{j:n, j} ================================== ##
 ## 3: - for k = 1 to j - 1 do ======================================== ##
 ##      \upsilon_{j:n} = \upsilon_{j:n} - L_{j:n, k} L_{j, k} ======== ##
-##      L_{j:n, k} L_{j, k} = \upsilon_{j:n} - \upsilon_{j:n} ======== ##
-
-upsi <- vector("list", nrow(Q))
-
-for (j in 1:ncol(Q)) {
-  
-  upsi[[j]] <- Q[j:nrow(Q), j]
-  
-}
-
 ## 4: - L_{j:n, j} = \upsilon_{j:n} / \sqrt{\upsilon_{j}} ============ ##
+n <- ncol(Q)
 
+L <- matrix(0, nrow = n, ncol = n)
+
+L[ , 1] <- Q[ , 1] / sqrt( Q[1, 1] )
+
+for (j in 2:n) {
+  upsi <- Q[j:n, j]
+  
+  for (k in 1:(j-1)) upsi <- upsi - L[j:n, k] * L[j, k]
+  
+  L[j:n, j] <- upsi / sqrt(upsi[1])
+}
 ## 5: end for ======================================================== ##
 ## 6: Return \mathbf{L} ============================================== ##
+L
 
+all.equal( L, t(chol(Q)) )
 ### ================================================================= ###
