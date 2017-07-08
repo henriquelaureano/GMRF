@@ -488,6 +488,12 @@ all.equal( L, t(chol(Q)) )
 
 # Algorithm 2.9 =========================================================
 ## Band-Cholesky factorization of \mathbf{Q} with bandwidth p ======== ##
+n <- 3 ; p <- 1
+Q <- Matrix::sparseMatrix(i = c(1, 2, 1, 2, 3, 2, 3)
+                          , j = c(1, 1, 2, 2, 2, 3, 3)
+                          , x = c(2, -1, -1, 2, -1, -1, 2)
+                          , dims = c(n, n) ) ; Q
+
 n <- 7 ; p <- 2
 Q <- Matrix::sparseMatrix(
   i = c( 1:(p+1), 1:(p+2)
@@ -506,8 +512,27 @@ Q <- Matrix::sparseMatrix(
 ## 6:   - \upsilon_{j:i} = \upsilon_{j:i} - L_{j:i, k} L_{j, k} ====== ##
 ## 7: - end for ====================================================== ##
 ## 8: - L_{j:\lambda, j} = \upsilon_{j:\lambda} / \sqrt{\upsilon_{j}}  ##
+upsi <- numeric(n)
+
+L <- matrix(0, nrow = n, ncol = n)
+
+for (j in 1:n) {
+  l <- min(j + p, n)
+  
+  upsi[j:l] <- Q[j:l, j]
+  
+  if (j > 1)
+    for (k in max(1, j-p):(j-1)) {
+      
+      i <- min(k + p, n)
+      
+      upsi[j:i] <- upsi[j:i] - L[j:i, k] * L[j, k] }
+  
+  L[j:l, j] <- upsi[j:l] / sqrt(upsi[j])
+}
 ## 9: end for ======================================================== ##
 ## 10: Return \mathbf{L} ============================================= ##
+L
 
-t(chol(Q))
+all.equal( L, t(chol(Q)), check.attributes = FALSE )
 ### ================================================================= ###
