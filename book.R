@@ -488,11 +488,11 @@ all.equal( L, t(chol(Q)) )
 
 # Algorithm 2.9 =========================================================
 ## Band-Cholesky factorization of \mathbf{Q} with bandwidth p ======== ##
-n <- 3 ; p <- 1
-Q <- Matrix::sparseMatrix(i = c(1, 2, 1, 2, 3, 2, 3)
-                          , j = c(1, 1, 2, 2, 2, 3, 3)
-                          , x = c(2, -1, -1, 2, -1, -1, 2)
-                          , dims = c(n, n) ) ; Q
+# n <- 3 ; p <- 1
+# Q <- Matrix::sparseMatrix(i = c(1:2, 1:3, 2:3)
+#                           , j = c(1, 1, 2, 2, 2, 3, 3)
+#                           , x = c(2, -1, -1, 2, -1, -1, 2)
+#                           , dims = c(n, n) ) ; Q
 
 n <- 7 ; p <- 2
 Q <- Matrix::sparseMatrix(
