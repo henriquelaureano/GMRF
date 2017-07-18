@@ -541,6 +541,28 @@ all.equal( L, t(chol(Q)), check.attributes = FALSE )
 
 # Algorithm 2.10 ========================================================
 ## Sampling a zero mean GMRF with block-circulant precision ========== ##
+
+cm <- function(x) { # cm: circulant matrix
+  n <- length(x)
+  suppressWarnings(
+    matrix(x[matrix(1:n, n+1, n+1, byrow = TRUE)[c(1, n:2), 1:n]], n, n)
+  )
+} ; cm(letters[1:4])
+
+### Three different circulating matrix of dimension 3 x 3
+( ms <- list( diag(3), cm(1:3), matrix(4, nrow = 3, ncol = 3) ) )
+
+cols <- function(ms, n) { # ms: matrices (list of)
+  if (n == 0) return(ms)
+  c( tail(ms, n), head(ms, -n) )
+}
+rcols <- function(n, ms) do.call(rbind, cols(ms, n))
+bcm <- function(ms) { # bcm: block-circulant matrix
+  n <- length(ms)
+  do.call( cbind, lapply(0:(n-1), rcols, ms) )
+}
+( th <- bcm(ms) ) # block-circulant precision
+
 ## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
 ##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
 ## 2: Compute the (real) eigenvalues, ================================ ##
