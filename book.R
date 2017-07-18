@@ -550,8 +550,12 @@ cm <- function(x) { # cm: circulant matrix
 } ; cm(letters[1:4])
 
 ### Three different circulating matrix of dimension 3 x 3
-( ms <- list( diag(3), cm(1:3), matrix(4, nrow = 3, ncol = 3) ) )
-
+( ms <-
+    list( matrix(6, nrow = 3, ncol = 3), diag(2, nrow = 3), cm(1:3) )
+)
+( ms <-
+    list( cm(c(5, 2, 2)), diag(2, nrow = 3), cm(1:3) )
+)
 cols <- function(ms, n) { # ms: matrices (list of)
   if (n == 0) return(ms)
   c( tail(ms, n), head(ms, -n) )
@@ -562,7 +566,7 @@ bcm <- function(ms) { # bcm: block-circulant matrix
   do.call( cbind, lapply(0:(n-1), rcols, ms) )
 }
 ( th <- bcm(ms) ) # block-circulant precision
-
+chol(th)
 ## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
 ##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
 ## 2: Compute the (real) eigenvalues, ================================ ##
