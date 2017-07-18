@@ -535,4 +535,19 @@ for (j in 1:n) {
 L
 
 all.equal( L, t(chol(Q)), check.attributes = FALSE )
+
+## 2.6 Stationary GMRFs =================================================
+## 2.6.3 GMRFs with circulant precision matrices ========================
+
+# Algorithm 2.10 ========================================================
+## Sampling a zero mean GMRF with block-circulant precision ========== ##
+## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
+##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
+## 2: Compute the (real) eigenvalues, ================================ ##
+##    \bm{\Lambda} = \sqrt(nN) DFT2(\theta) ========================== ##
+## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
+##                          \odot \mathbf{z} ) ======================= ##
+## 4: \mathbf{x} = Re(\bm{\upsilon})
+## 5: Return mathbf{x} =============================================== ##
+
 ### ================================================================= ###
