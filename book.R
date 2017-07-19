@@ -493,7 +493,6 @@ all.equal( L, t(chol(Q)) )
 #                           , j = c(1, 1, 2, 2, 2, 3, 3)
 #                           , x = c(2, -1, -1, 2, -1, -1, 2)
 #                           , dims = c(n, n) ) ; Q
-
 n <- 7 ; p <- 2
 Q <- Matrix::sparseMatrix(
   i = c( 1:(p+1), 1:(p+2)
@@ -541,7 +540,6 @@ all.equal( L, t(chol(Q)), check.attributes = FALSE )
 
 # Algorithm 2.10 ========================================================
 ## Sampling a zero mean GMRF with block-circulant precision ========== ##
-
 cm <- function(x) { # cm: circulant matrix
   n <- length(x)
   suppressWarnings(
@@ -564,7 +562,6 @@ chol(th) # Showing that the resulting matrix is SPB
 
 ## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
 ##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
-
 ( z <- rnorm(nrow(th)) + rnorm(nrow(th)) * 1i )
 
 ## 2: Compute the (real) eigenvalues, ================================ ##
