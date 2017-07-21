@@ -581,7 +581,14 @@ dft2 <- function(mx) {
     } }
   return(mx.dft2) }
 round( th.dft2 <- dft2(th), 2 )
-
+# for (i in 1:n) {
+#   for (j in 1:N) {
+#     dft2.th[i, j] <- sum(
+#       1/sqrt(n*N) * th[1:(n-1), 1:(N-1)] *
+#         exp(-2*pi*1i*( ((i*(1:(n-1)))/n) + ((j*(1:(N-1)))/N) ))
+#     )
+#   }
+# }
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
 ## 4: \mathbf{x} = Re(\bm{\upsilon})
