@@ -568,6 +568,20 @@ round(z <- matrix(rnorm(nrow(th)) + rnorm(nrow(th)) * 1i
 
 ## 2: Compute the (real) eigenvalues, ================================ ##
 ##    \bm{\Lambda} = \sqrt(nN) DFT2(\theta) ========================== ##
+dft2 <- function(mx) {
+  n <- dim(mx)[1]
+  N <- dim(mx)[2]
+  mx.dft2 <- matrix(NA, nrow = n, ncol = N)
+  for (i in 1:n) {
+    for (j in 1:N) {
+      mx.dft2[i, j] <- suppressWarnings( sum(
+        1/sqrt(n*N) * mx[0:(n-1), 0:(N-1)] *
+          exp(-2*pi*1i*( ((i*(0:(n-1)))/n) + ((j*(0:(N-1)))/N) ))
+      ) )
+    } }
+  return(mx.dft2) }
+round( th.dft2 <- dft2(th), 2 )
+
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
 ## 4: \mathbf{x} = Re(\bm{\upsilon})
