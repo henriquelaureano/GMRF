@@ -562,7 +562,9 @@ chol(th) # Showing that the resulting matrix is SPB
 
 ## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
 ##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
-( z <- rnorm(nrow(th)) + rnorm(nrow(th)) * 1i )
+round(z <- matrix(rnorm(nrow(th)) + rnorm(nrow(th)) * 1i
+                  , nrow = nrow(th)
+                  , ncol = ncol(th)), 2)
 
 ## 2: Compute the (real) eigenvalues, ================================ ##
 ##    \bm{\Lambda} = \sqrt(nN) DFT2(\theta) ========================== ##
