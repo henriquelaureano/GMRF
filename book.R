@@ -558,7 +558,7 @@ bcm <- function(ms) { # bcm: Block-Circulant Matrix
 ### Three different circulating matrix of dimension 3 x 3
 ( ms <- list( cm(c(5, 2, 2)), cm(c(2, 0, 0)), cm(1:3) ) )
 ( th <- bcm(ms) )
-chol(th) # Showing that the resulting matrix is SPB
+chol(th) # Showing that the resulting matrix is SPD
 
 ## 1: Sample \mathbf{z}, where Re(z_{ij}) \overset{iid}{\sim} N(0, 1) and
 ##    Im(z_{ij}) \overset{iid}{\sim} N(0, 1) ========================= ##
@@ -574,8 +574,8 @@ dft2 <- function(mx) {
   mx.dft2 <- matrix(NA, nrow = n, ncol = N)
   for (i in 1:n) {
     for (j in 1:N) {
-      mx.dft2[i, j] <- suppressWarnings( sum(
-        1/sqrt(n*N) * mx[0:(n-1), 0:(N-1)] *
+      mx.dft2[i, j] <- suppressWarnings( (1/sqrt(n*N)) * sum(
+        mx[0:(n-1), 0:(N-1)] *
           exp(-2*pi*1i*( ((i*(0:(n-1)))/n) + ((j*(0:(N-1)))/N) ))
       ) )
     } }
@@ -589,6 +589,49 @@ round( th.dft2 <- dft2(th), 2 )
 #     )
 #   }
 # }
+round( lambda <- sqrt(dim(th)[1] * dim(th)[2]) * th.dft2, 2 )
+round( lambda <- sqrt(3 * 3) * th.dft2, 2 )
+eigen(th)$values
+
+# -----------------------------------------------------------------------
+a <- matrix(round(abs(rnorm(9, 3, 2)), 0), 3, 3) ; a
+eigen(a)$values
+Re(eigen(a)$values)
+dft2(a)
+
+3*fft(a)
+
+(1/sqrt(3*3))*(2*exp(-2*pi*1i*(((1*1)/3)+((1*1)/3)))+
+                 4*exp(-2*pi*1i*(((1*1)/3)+((1*2)/3)))+
+                 1*exp(-2*pi*1i*(((1*2)/3)+((1*1)/3)))+
+                 5*exp(-2*pi*1i*(((1*2)/3)+((1*2)/3)))
+)
+dft2 <- function(mx) {
+  n <- dim(mx)[1]
+  N <- dim(mx)[2]
+  mx.dft2 <- matrix(NA, nrow = n, ncol = N)
+  for (i in 1:n) {
+    for (j in 1:N) {
+      mx.dft2[i, j] <- ( 1/sqrt(n*N) ) *
+        sum( c(t( mx[1:(n-1), 1:(N-1)] )) *
+               exp( -2 * pi * 1i *
+                      apply(expand.grid(i*1:(n-1)/n, j*1:(N-1)/N), 1, sum)
+               ) )
+    } }
+  return(mx.dft2) }
+dft2(a)
+
+mx.dft2
+
+# fft0 <- function(z, inverse=FALSE) { # z <- a
+n <- length(z)
+if(n == 0) return(z)
+k <- 0:(n-1)
+ff <- -2*pi * 1i * k/n
+vapply(1:n, function(h) sum(z * exp(ff*(h-1))), complex(1))
+# }
+# -----------------------------------------------------------------------
+
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
 ## 4: \mathbf{x} = Re(\bm{\upsilon})
