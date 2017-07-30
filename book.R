@@ -567,45 +567,13 @@ round(z <- matrix(rnorm(nrow(th)) + rnorm(nrow(th)) * 1i
                   , ncol = ncol(th)), 2)
 
 ## 2: Compute the (real) eigenvalues, ================================ ##
-##    \bm{\Lambda} = \sqrt(nN) DFT2(\theta) ========================== ##
-dft2 <- function(mx) {
-  n <- dim(mx)[1]
-  N <- dim(mx)[2]
-  mx.dft2 <- matrix(NA, nrow = n, ncol = N)
-  for (i in 1:n) {
-    for (j in 1:N) {
-      mx.dft2[i, j] <- suppressWarnings( (1/sqrt(n*N)) * sum(
-        mx[0:(n-1), 0:(N-1)] *
-          exp(-2*pi*1i*( ((i*(0:(n-1)))/n) + ((j*(0:(N-1)))/N) ))
-      ) )
-    } }
-  return(mx.dft2) }
-round( th.dft2 <- dft2(th), 2 )
-# for (i in 1:n) {
-#   for (j in 1:N) {
-#     dft2.th[i, j] <- sum(
-#       1/sqrt(n*N) * th[1:(n-1), 1:(N-1)] *
-#         exp(-2*pi*1i*( ((i*(1:(n-1)))/n) + ((j*(1:(N-1)))/N) ))
-#     )
-#   }
-# }
-round( lambda <- sqrt(dim(th)[1] * dim(th)[2]) * th.dft2, 2 )
-round( lambda <- sqrt(3 * 3) * th.dft2, 2 )
-eigen(th)$values
-
-# -----------------------------------------------------------------------
+##    \bm{\Lambda} = \sqrt(n*N) DFT2(\theta) ========================= ##
 a <- matrix(round(abs(rnorm(9, 3, 2)), 0), 3, 3) ; a
-eigen(a)$values
-Re(eigen(a)$values)
-dft2(a)
-
-3*fft(a)
-
-(1/sqrt(3*3))*(2*exp(-2*pi*1i*(((1*1)/3)+((1*1)/3)))+
-                 4*exp(-2*pi*1i*(((1*1)/3)+((1*2)/3)))+
-                 1*exp(-2*pi*1i*(((1*2)/3)+((1*1)/3)))+
-                 5*exp(-2*pi*1i*(((1*2)/3)+((1*2)/3)))
-)
+# (1/sqrt(3*3))*(2*exp(-2*pi*1i*(((1*1)/3)+((1*1)/3)))+
+#                  4*exp(-2*pi*1i*(((1*1)/3)+((1*2)/3)))+
+#                  1*exp(-2*pi*1i*(((1*2)/3)+((1*1)/3)))+
+#                  5*exp(-2*pi*1i*(((1*2)/3)+((1*2)/3)))
+# )
 dft2 <- function(mx) {
   n <- dim(mx)[1]
   N <- dim(mx)[2]
@@ -619,18 +587,9 @@ dft2 <- function(mx) {
                ) )
     } }
   return(mx.dft2) }
-dft2(a)
 
-mx.dft2
-
-# fft0 <- function(z, inverse=FALSE) { # z <- a
-n <- length(z)
-if(n == 0) return(z)
-k <- 0:(n-1)
-ff <- -2*pi * 1i * k/n
-vapply(1:n, function(h) sum(z * exp(ff*(h-1))), complex(1))
-# }
-# -----------------------------------------------------------------------
+(lambda <- Re(sqrt(nrow(a)*ncol(a))*dft2(a)))
+Re(eigen(a)$values)
 
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
