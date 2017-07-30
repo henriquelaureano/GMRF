@@ -582,17 +582,17 @@ dft2 <- function(mx) {
     } }
   return(mx.dft2) } ; n <- dim(th)[1] ; N <- dim(th)[2]
 
-(lambda <- Re( sqrt(nrow(th)*ncol(th))*dft2(th) ))
-# Re(eigen(th)$values)
+( lambda <- sqrt(nrow(th)*ncol(th))*dft2(th) )
+# eigen(th)$values
 
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
-a**(-1/2)
-round(z <- matrix(rnorm(nrow(a)) + rnorm(nrow(a)) * 1i
-                  , nrow = nrow(a)
-                  , ncol = ncol(a)), 2)
-a * z
+(upsilon <- dft2( lambda**(-1/2)*z ))
+
 ## 4: \mathbf{x} = Re(\bm{\upsilon})
+x <- Re(upsilon)
+
 ## 5: Return mathbf{x} =============================================== ##
+x
 
 ### ================================================================= ###
