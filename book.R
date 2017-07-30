@@ -593,6 +593,11 @@ Re(eigen(a)$values)
 
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
+a**(-1/2)
+round(z <- matrix(rnorm(nrow(a)) + rnorm(nrow(a)) * 1i
+                  , nrow = nrow(a)
+                  , ncol = ncol(a)), 2)
+a * z
 ## 4: \mathbf{x} = Re(\bm{\upsilon})
 ## 5: Return mathbf{x} =============================================== ##
 
