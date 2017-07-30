@@ -568,17 +568,6 @@ round(z <- matrix(rnorm(nrow(th)) + rnorm(nrow(th)) * 1i
 
 ## 2: Compute the (real) eigenvalues, ================================ ##
 ##    \bm{\Lambda} = \sqrt(n*N) DFT2(\theta) ========================= ##
-a <- matrix(round(abs(rnorm(16, 3, 2)), 0), 4, 4) ; a
-(1/sqrt(4*4))*(3*exp(-2*pi*1i*(((1*1)/4)+((1*1)/4)))+
-                 1*exp(-2*pi*1i*(((1*1)/4)+((1*2)/4)))+
-                 3*exp(-2*pi*1i*(((1*1)/4)+((1*3)/4)))+
-                 4*exp(-2*pi*1i*(((1*2)/4)+((1*1)/4)))+
-                 4*exp(-2*pi*1i*(((1*2)/4)+((1*2)/4)))+
-                 1*exp(-2*pi*1i*(((1*2)/4)+((1*3)/4)))+
-                 1*exp(-2*pi*1i*(((1*3)/4)+((1*1)/4)))+
-                 8*exp(-2*pi*1i*(((1*3)/4)+((1*2)/4)))+
-                 4*exp(-2*pi*1i*(((1*3)/4)+((1*3)/4)))
-)
 dft2 <- function(mx) {
   n <- dim(mx)[1]
   N <- dim(mx)[2]
@@ -591,10 +580,10 @@ dft2 <- function(mx) {
                       apply(expand.grid(i*1:(n-1)/n, j*1:(N-1)/N), 1, sum)
                ) )
     } }
-  return(mx.dft2) }
+  return(mx.dft2) } ; n <- dim(th)[1] ; N <- dim(th)[2]
 
-(lambda <- Re(sqrt(nrow(a)*ncol(a))*dft2(a)))
-Re(eigen(a)$values)
+(lambda <- Re( sqrt(nrow(th)*ncol(th))*dft2(th) ))
+# Re(eigen(th)$values)
 
 ## 3: \bm{\upsilon} = DFT2( ( \bm{\Lambda} \textcircled{e}(-frac{1}{2}) )
 ##                          \odot \mathbf{z} ) ======================= ##
