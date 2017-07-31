@@ -1,0 +1,167 @@
+## Sampling a zero mean GMRF with block-circulant precision
+
+<center>
+![](algorithm_2-10.png)
+</center>
+
+***
+<div align="right">
+[Henrique Ap. Laureano](http://www.github.com/mynameislaure)<br>
+email: henrique.laureano@kaust.edu.sa
+```{r, echo=FALSE}
+date()
+```
+</div>
+***
+
+### First, generating a block-circulant precision matrix
+
+```{r}
+options(width=125)
+cm <- function(x) { # cm: circulant matrix
+  n <- length(x)
+  suppressWarnings(
+    matrix(x[matrix(1:n, n+1, n+1, byrow = TRUE)[c(1, n:2), 1:n]], n, n)
+  )
+} ; cm(letters[1:4])
+cols <- function(ms, n) { # ms: matrices (list of)
+  if (n == 0) return(ms)
+  c( tail(ms, n), head(ms, -n) )
+}
+rcols <- function(n, ms) do.call(rbind, cols(ms, n))
+bcm <- function(ms) { # bcm: Block-Circulant Matrix
+  n <- length(ms)
+  do.call( cbind, lapply(0:(n-1), rcols, ms) )
+}
+### Three different circulating matrix of dimension 3 x 3
+( ms <- list( cm(c(5, 2, 2)), cm(c(2, 0, 0)), cm(1:3) ) )
+( th <- bcm(ms) )
+chol(th) # Showing that the resulting matrix is SPD
+```
+
+***
+
+### Implementation of the algorithm steps:
+
+***
+
+> 1: Sample
+     \(\mathbf{z}\), where
+     \({\rm Re}(z_{ij}) \overset{{\rm iid}}{\sim} N(0, 1)\)
+     and \({\rm Im}(z_{ij}) \overset{{\rm iid}}{\sim} N(0, 1)\)
+
+```{r}
+round(z <- matrix(rnorm(nrow(th)) + rnorm(nrow(th)) * 1i
+                  , nrow = nrow(th)
+                  , ncol = ncol(th)), 1)
+```
+
+***
+
+> 2: Compute the (real) eigenvalues,
+     \(\mathbf{\Lambda} = \sqrt{n\cdot N}{\rm DFT2}(\theta)\)
+
+On what
+
+- \(n\) is the number of **rows** in the matrix \(\theta\);
+- \(N\) is the number of **columns** in the matriz \(\theta\);
+- \(\theta\) I **assumed** it is the block-circulant precision matrix;
+- DFT2 (**two-dimensional discrete Fourier transform matrix**):
+    + matrix with elements:
+  
+\[
+\frac{1}{nN} \sum_{{i}'=0}^{n-1} \sum_{{j}'=0}^{N-1} \theta_{{i}'{j}'}
+\exp \bigg( -2 \pi {\rm i} (\frac{i{i}'}{n} + \frac{j{j}'}{N})
+     \bigg), \quad {\rm i} = \sqrt{-1}.
+\]
+
+*By steps, for understanding:*
+
+For a given \(i\) e \(j\), 1 and 1, for example, we calculated
+\(\sum_{{i}'=0}^{n-1} \sum_{{j}'=0}^{N-1} \theta_{{i}'{j}'}\) with
+
+```{r, eval=FALSE}
+# with the following line of code we select all the necessary elements of
+# the matrix mx and order them in a way in which the correct
+# multiplication is done with the exponential of the next part of the
+# equation
+c(t( mx[1:(n-1), 1:(N-1)] )) # in sum()
+```
+
+For a given \(i\) e \(j\), 1 and 1, for example, we calculated
+\(\sum_{{i}'=0}^{n-1} \sum_{{j}'=0}^{N-1} 
+  \exp \bigg( -2 \pi {\rm i} (\frac{i{i}'}{n} + \frac{j{j}'}{N}) \bigg)\)
+with
+
+```{r, eval=FALSE}
+# in sum()
+exp(-2 * pi * 1i * apply(expand.grid(i*1:(n-1)/n, j*1:(N-1)/N), 1, sum))
+```
+<div align="right"> \(\square\) </div>
+
+Ok, now, the complete implementation:
+
+```{r}
+dft2 <- function(mx) {
+  n <- dim(mx)[1]
+  N <- dim(mx)[2]
+  mx.dft2 <- matrix(NA, nrow = n, ncol = N)
+  for (i in 1:n) {
+    for (j in 1:N) {
+      mx.dft2[i, j] <- ( 1/sqrt(n*N) ) *
+        sum( c(t( mx[1:(n-1), 1:(N-1)] )) *
+               exp( -2 * pi * 1i *
+                      apply(expand.grid(i*1:(n-1)/n, j*1:(N-1)/N), 1, sum)
+               ) )
+    } }
+  return(mx.dft2) } ; n <- dim(th)[1] ; N <- dim(th)[2]
+
+round( lambda <- sqrt(nrow(th) * ncol(th)) * dft2(th), 1 )
+```
+
+***
+
+### Problem / doubt
+
+**Via spectral decomposition, for example, we should also obtain these 
+  eigenvalues, \(\mathbf{\Lambda}\), but this is not what happens:**
+
+```{r}
+round(eigen(th)$values, 1)
+```
+
+**The "real" eigenvalues, written in this step of the algorithm also 
+  caused me doubt. What does that mean? It's not just to get the real
+  part of \(\mathbf{\Lambda}\), in this way step 3 fails.**
+
+**Looking to the implementation, I don't see anything wrong (wrong 
+  implemented), and you?**
+
+***
+
+> 3: \(\boldsymbol{\upsilon}=
+     {\rm DFT2}((\mathbf{\Lambda}\text{elementwisepower}(-\frac{1}{2}))
+     \odot\mathbf{z})\)
+
+```{r}
+round(upsilon <- dft2( lambda**(-1/2)*z ), 1)
+```
+
+***
+
+> 4: \(\mathbf{x} = {\rm Re}(\boldsymbol{\upsilon})\)
+
+```{r}
+x <- Re(upsilon)
+```
+
+***
+
+> 5: Return \(\mathbf{x}\)
+
+```{r}
+round(x, 4)
+```
+
+***
+<div align="right"> \(\blacksquare\) </div>
