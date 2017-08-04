@@ -18,4 +18,4 @@
 
 Repository with the ten algorithms of chapter **2** (**Theory of Gaussian Markov random fields**) implemented.
 
-Studying: [Algorithm 2.10]()
+Studying: [Algorithm 2.10](http://mynameislaure.github.io/GMRF/helpmepls.html)
