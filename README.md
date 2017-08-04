@@ -12,6 +12,10 @@
 }
 ```
 
-Repository with the ten algorithms of chapter 2 (Theory of Gaussian Markov random fields) implemented.
+[Gaussian Markov Random Fields: Theory and Applications - CRC Press Book](https://www.crcpress.com/Gaussian-Markov-Random-Fields-Theory-and-Applications/Rue-Held/p/book/9781584884323)
+
+[Gaussian Markov Random Fields: Theory and Applications](https://folk.ntnu.no/hrue/GMRF-book/)
+
+Repository with the ten algorithms of chapter **2** (**Theory of Gaussian Markov random fields**) implemented.
 
 Studying: [Algorithm 2.10]()
